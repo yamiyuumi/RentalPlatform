@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{page_layout/layout}" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <meta charset="UTF-8">
+    <title>Property Application Management</title>
+    <style>
+        /* Table styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        /* Limit description text length and add ellipsis */
+        td.description {
+            max-width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Style the description box for better readability */
+        .description-box {
+            max-height: 100px;
+            overflow-y: auto;
+            word-wrap: break-word;
+            padding: 5px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+        }
+
+        /* Optional: Add tooltip on hover for long descriptions */
+        td.description:hover::after {
+            content: attr(data-full-text);
+            position: absolute;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 5px;
+            border-radius: 5px;
+            white-space: normal;
+            max-width: 300px;
+            word-wrap: break-word;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <section>
+        <h2>Pending Property Applications</h2>
+
+        <!-- Display message if no applications are available -->
+        <div th:if="${applications.isEmpty()}">
+            <p>No pending applications found.</p>
+        </div>
+
+        <!-- Table for displaying pending applications -->
+        <table th:if="${!applications.isEmpty()}" border="1">
+            <thead>
+                <tr>
+                    <th>Application ID</th>
+                    <th>Property Name</th>
+                    <th>Submitted Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="application : ${applications}">
+                    <td th:text="${application.applicationId}"></td>
+                    <td th:text="${application.property.propertyName}"></td>
+                    <td th:text="${application.applicationDate}"></td>
+                    <td th:text="${application.applicationStatus}"></td>
+                    <td>
+                        <form th:action="@{/property-application/accept/{id}(id=${application.applicationId})}" method="post">
+                            <button type="submit">Accept</button>
+                        </form>
+                        <form th:action="@{/property-application/reject/{id}(id=${application.applicationId})}" method="post">
+                            <button type="submit">Reject</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+</body>
+</html>
